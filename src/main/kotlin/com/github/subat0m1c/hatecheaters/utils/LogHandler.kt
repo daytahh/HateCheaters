@@ -1,23 +1,31 @@
 package com.github.subat0m1c.hatecheaters.utils
 
 import com.github.subat0m1c.hatecheaters.HateCheaters.Companion.launch
-import com.github.subat0m1c.hatecheaters.modules.skyblock.HateCheatersModule
 import com.github.subat0m1c.hatecheaters.utils.ChatUtils.debug
-import com.github.subat0m1c.hatecheaters.utils.ChatUtils.getCurrentDateTimeString
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.logging.FileHandler
-import java.util.logging.Logger as javaLogger
 import java.util.logging.SimpleFormatter
 import java.util.zip.GZIPOutputStream
+import java.util.logging.Logger as javaLogger
 
 /**
  * im pretty sure this is bad but i could not figure out making log4j actually log to the right folder
  */
 object LogHandler {
+    class Unique(name: String) {
+        val log: javaLogger = javaLogger.getLogger(name)
+
+        fun log(message: Any?) = log.info(message.toString())
+
+        init {
+            setupLogger(log, "mobs")
+        }
+    }
+
     object Logger {
         val log: javaLogger = javaLogger.getLogger("HateCheatersLogger")
 
@@ -36,7 +44,7 @@ object LogHandler {
 
     init {
         compressOldLogs()
-        setupLogger()
+        setupLogger(Logger.log, "hc")
     }
 
     private fun compressOldLogs() = launch {
@@ -64,13 +72,16 @@ object LogHandler {
         }
     }.onFailure { it.printStackTrace() }
 
-    private fun setupLogger() = runCatching {
+    private fun setupLogger(logger: javaLogger, name: String) = runCatching {
         val logDir = File("config/hatecheaters/mod_logs")
         if (!logDir.exists()) logDir.mkdirs()
 
-        val fileHandler = FileHandler("${logDir.absolutePath}/${SimpleDateFormat("yyyy-MM-dd_HH-mm-ss").format(Date())}.log", true)
+        val fileHandler = FileHandler(
+            "${logDir.absolutePath}/${name}_${SimpleDateFormat("yyyy-MM-dd_HH-mm-ss").format(Date())}.log",
+            true
+        )
         fileHandler.formatter = SimpleFormatter()
-        Logger.log.addHandler(fileHandler)
+        logger.addHandler(fileHandler)
         Logger.log.useParentHandlers = false
     }.onFailure { it.printStackTrace() }
 

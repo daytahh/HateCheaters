@@ -65,5 +65,6 @@ object Utils {
         drawEntityOnScreen(0, 0, scale, ((x*2)-mouseX).toFloat(), (mouseY-y).toFloat(), renderPlayer)
         GlStateManager.popMatrix()
         Shaders.startDraw()
+        GlStateManager.popMatrix() // pop the matrix made by start draw probably?
     }
 }

@@ -28,7 +28,7 @@ object WebUtils {
         fun getFromCache(name: String): String? = cache[name.lowercase()]
     }
 
-    private const val USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36"
+    private const val USER_AGENT = "HateCheatersAPI"
 
     suspend inline fun <reified T> streamAndRead(url: String, json: Json = HateCheaters.json): Result<T> = runCatching {
         return getInputStream(url).map {

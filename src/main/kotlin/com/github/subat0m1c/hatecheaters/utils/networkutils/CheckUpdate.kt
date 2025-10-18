@@ -1,17 +1,19 @@
 package com.github.subat0m1c.hatecheaters.utils.networkutils
 
-import com.github.subat0m1c.hatecheaters.utils.LogHandler.Logger
-import me.odinmain.utils.skyblock.getChatBreak
-import com.github.subat0m1c.hatecheaters.utils.OdinCheck.compareVersions
 import com.github.subat0m1c.hatecheaters.HateCheaters
 import com.github.subat0m1c.hatecheaters.HateCheaters.Companion.launch
 import com.github.subat0m1c.hatecheaters.utils.ChatUtils
 import com.github.subat0m1c.hatecheaters.utils.ChatUtils.modMessage
+import com.github.subat0m1c.hatecheaters.utils.LogHandler.Logger
+import com.github.subat0m1c.hatecheaters.utils.OdinCheck
+import com.github.subat0m1c.hatecheaters.utils.OdinCheck.compareVersions
 import com.github.subat0m1c.hatecheaters.utils.networkutils.WebUtils.streamAndRead
-import net.minecraft.event.ClickEvent
-import kotlinx.serialization.*
-import kotlinx.serialization.json.*
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.Json
 import me.odinmain.utils.runIn
+import me.odinmain.utils.skyblock.getChatBreak
+import net.minecraft.event.ClickEvent
 
 object CheckUpdate {
     private val json = Json {
@@ -32,12 +34,12 @@ object CheckUpdate {
 
         val isNewVersionAvailable = compareVersions(latestVersion, currentVersion)
         when {
-            isNewVersionAvailable < 0 -> {
+            isNewVersionAvailable == OdinCheck.Comparison.OLDER -> {
                 Logger.info("HC > Development Build Detected!")
                 modMessage("You are on a development build! Hi!")
             }
 
-            isNewVersionAvailable > 0 -> {
+            isNewVersionAvailable == OdinCheck.Comparison.NEWER -> {
                 ChatUtils.chatConstructor {
                     displayText(getChatBreak())
                     displayText("§bHate§3Cheaters§r Update available! ($currentVersion → $latestVersion)")

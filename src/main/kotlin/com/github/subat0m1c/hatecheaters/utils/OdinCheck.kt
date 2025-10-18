@@ -30,7 +30,11 @@ object OdinCheck {
 
         try {
             val currentOdin = Loader.instance().activeModList.find { it.modId == "od" || it.modId == "odclient" }?.version ?: ""
-            if (compareVersions(currentOdin, "@REQUIREDODINVERSION@") == -1) odinWarning("Odin is outdated!", currentOdin)
+            if (compareVersions(
+                    currentOdin,
+                    "@REQUIREDODINVERSION@"
+                ) == Comparison.OLDER
+            ) odinWarning("Odin is outdated!", currentOdin)
         } catch (e: Throwable) {
             odinWarning("An unknown error occurred trying to determine Odin version!")
             return
@@ -115,40 +119,33 @@ object OdinCheck {
 
     private val versionRegex = Regex("(\\d+)\\.(\\d+)\\.(\\d+)(?:\\.(\\d+))?(?:\\.beta(\\d+))?")
 
-    /**
-     * UPDATE: it now generally compares versions between the 2 args, might be good idk
-     *
-     * I think this code is bad but i cant be bothered fixing it. also can return lower than -1.
-     *
-     * @return -1 if version1 is older, 1 if version1 is newer, 0 if they're the same.
-     */
-    fun compareVersions(version1: String, version2: String): Int {
-        val v1 = versionRegex.find(version1)?.groupValues?.drop(1)?.map { it.toIntOrNull() } ?: return -2
-        val v2 = versionRegex.find(version2)?.groupValues?.drop(1)?.map { it.toIntOrNull() } ?: return -2
-
+    fun compareVersions(current: String, compare: String): Comparison? {
+        val cur = versionRegex.find(current)?.groupValues?.drop(1)?.map { it.toIntOrNull() } ?: return null
+        val cmp = versionRegex.find(compare)?.groupValues?.drop(1)?.map { it.toIntOrNull() } ?: return null
 
         for (i in 0..2) {
-            val compared = compareNumbers(v1[i], v2[i])
-            if (compared != 0) return compared
+            val compared = compareNumbers(cur[i], cmp[i])
+            if (compared != Comparison.EQUAL) return compared
         }
 
-        val comparedFourth = compareNumbers(v1.getOrNull(3), v2.getOrNull(3))
-        if (comparedFourth != 0) return comparedFourth
+        val comparedFourth = compareNumbers(cur.getOrNull(3), cmp.getOrNull(3))
+        if (comparedFourth != Comparison.EQUAL) return comparedFourth
 
-        val v1Beta = v1.getOrNull(4)
-        val v2Beta = v2.getOrNull(4)
-
-        if (v1Beta != null && v2Beta != null) return compareNumbers(v1Beta, v2Beta)
-        else if (v1Beta != null) return -1
-        else if (v2Beta != null) return 1
-
-        return 0
+        return compareNumbers(cur.getOrNull(4), cmp.getOrNull(4))
     }
 
-    private fun compareNumbers(n1: Int?, n2: Int?): Int {
-        if (n1 == null && n2 == null) return 0
-        if (n1 == null) return -1
-        if (n2 == null) return 1
-        return n1.compareTo(n2)
+    private fun compareNumbers(current: Int?, compare: Int?): Comparison = when {
+        current == null && compare == null -> Comparison.EQUAL
+        current == null -> Comparison.OLDER
+        compare == null -> Comparison.NEWER
+        current > compare -> Comparison.NEWER
+        current < compare -> Comparison.OLDER
+        else -> Comparison.EQUAL
+    }
+
+    enum class Comparison {
+        EQUAL,
+        OLDER,
+        NEWER
     }
 }

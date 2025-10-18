@@ -4,6 +4,7 @@ import com.github.subat0m1c.hatecheaters.commands.CommandRegistry
 import com.github.subat0m1c.hatecheaters.commands.impl.PVCommand
 import com.github.subat0m1c.hatecheaters.modules.dungeons.BetterPartyFinder
 import com.github.subat0m1c.hatecheaters.modules.dungeons.ClearSecrets
+import com.github.subat0m1c.hatecheaters.modules.dungeons.MobLogger
 import com.github.subat0m1c.hatecheaters.modules.render.ProfileViewer
 import com.github.subat0m1c.hatecheaters.modules.render.ProfileViewer.pvCommand
 import com.github.subat0m1c.hatecheaters.modules.skyblock.HateCheatersModule
@@ -50,7 +51,7 @@ class HateCheaters {
     @Mod.EventHandler
     fun load(event: FMLLoadCompleteEvent) {
         ModuleManager.addModules(
-            BetterPartyFinder, HateCheatersModule, ProfileViewer, ClearSecrets
+            BetterPartyFinder, HateCheatersModule, ProfileViewer, ClearSecrets, MobLogger
         )
     }
 
