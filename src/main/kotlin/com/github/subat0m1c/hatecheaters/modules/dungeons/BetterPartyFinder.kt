@@ -321,7 +321,6 @@ object BetterPartyFinder : Module(
                 }
 
                 if (joinSound && waitForKick) playCustomSound()
-                displayDungeonData(currentProfile, profiles.name, petMap.keys, floor)
             }
         }
 
